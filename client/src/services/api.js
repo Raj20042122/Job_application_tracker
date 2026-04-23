@@ -1,17 +1,15 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "https://job-application-tracker-knm6.onrender.com",
+const api = axios.create({
+  baseURL: "https://job-application-tracker-knm6.onrender.com/api",
 });
 
-API.interceptors.request.use((req) => {
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-
   if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
-
-  return req;
+  return config;
 });
 
-export default API;
+export default api;
