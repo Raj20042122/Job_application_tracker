@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://job-application-tracker-knm6.onrender.com/api",
+  baseURL: "http://localhost:5000/api", // Changed to test new local features
 });
 
 api.interceptors.request.use((config) => {

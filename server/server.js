@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 // routes
 const authRoutes = require("./routes/authRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const resumeRoutes = require("./routes/resumeRoutes");
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/resume", resumeRoutes);
 
 // error handler (optional)
 const errorHandler = require("./middleware/errorHandler");

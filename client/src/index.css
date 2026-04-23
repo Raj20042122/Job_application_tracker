@@ -1,3 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0f172a] text-[#f1f5f9] antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .saas-card {
+    @apply bg-[#1e293b] rounded-2xl shadow-sm border border-[#334155] transition-colors duration-300;
+  }
+  .saas-input {
+    @apply w-full rounded-xl border border-[#334155] bg-[#0f172a] px-4 py-3 text-[#f1f5f9] focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-[#0f172a] outline-none transition-all;
+  }
+  .saas-button {
+    @apply inline-flex items-center justify-center rounded-xl bg-[#6366f1] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#4f46e5] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#6366f1]/20 focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:ring-offset-2 focus:ring-offset-[#0f172a] disabled:opacity-50 disabled:cursor-not-allowed transition-all;
+  }
+}
+
+/* Custom Scrollbar for clean look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-[#334155] rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-[#475569];
+}

@@ -1,201 +1,169 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
-import {
-  Briefcase,
-  Search,
-  Trash2,
-  LogOut,
-  PlusCircle,
-  BarChart3,
-} from "lucide-react";
+import { Plus, Briefcase, Calendar, XCircle, CheckCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
-const statusColors = {
-  Applied: "bg-blue-100 text-blue-700",
-  Interview: "bg-yellow-100 text-yellow-700",
-  Rejected: "bg-red-100 text-red-700",
-  Offer: "bg-green-100 text-green-700",
-};
+import StatsCard from "../components/StatsCard";
+import JobTable from "../components/JobTable";
+import NotesModal from "../components/NotesModal";
+import AddJobModal from "../components/AddJobModal";
+import OverviewChart from "../components/OverviewChart";
 
 const Dashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [stats, setStats] = useState({});
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [title, setTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [jobStatus, setJobStatus] = useState("Applied");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
     fetchJobs();
     fetchStats();
-  }, [search, status]);
+  }, []);
 
   const fetchJobs = async () => {
+    setLoading(true);
     try {
-      let url = `/jobs?`;
-      if (search) url += `search=${search}&`;
-      if (status) url += `status=${status}`;
-
-      const res = await API.get(url);
+      const res = await API.get("/jobs");
       setJobs(res.data.data || res.data);
+    } catch (err) {
+      toast.error("Failed to fetch jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const res = await API.get("/jobs/stats");
+      setStats(res.data);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchStats = async () => {
-    const res = await API.get("/jobs/stats");
-    setStats(res.data);
+  const handleAddJob = async (jobData) => {
+    try {
+      await API.post("/jobs", jobData);
+      toast.success("Job added successfully");
+      setIsAddModalOpen(false);
+      fetchJobs();
+      fetchStats();
+    } catch (err) {
+      toast.error("Failed to add job");
+    }
   };
 
-  const handleAddJob = async (e) => {
-    e.preventDefault();
-    await API.post("/jobs", { title, company, status: jobStatus });
-
-    setTitle("");
-    setCompany("");
-    setJobStatus("Applied");
-
-    fetchJobs();
-    fetchStats();
+  const handleDeleteJob = async (id) => {
+    try {
+      await API.delete(`/jobs/${id}`);
+      toast.success("Job deleted");
+      fetchJobs();
+      fetchStats();
+    } catch (err) {
+      toast.error("Failed to delete job");
+    }
   };
 
-  const deleteJob = async (id) => {
-    await API.delete(`/jobs/${id}`);
-    fetchJobs();
-    fetchStats();
+  const handleOpenNotes = (job) => {
+    setSelectedJob(job);
+    setIsNotesOpen(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.reload();
+  const handleSaveNotes = async (id, notes) => {
+    try {
+      await API.put(`/jobs/${id}`, { notes });
+      toast.success("Notes saved");
+      setIsNotesOpen(false);
+      fetchJobs();
+    } catch (err) {
+      toast.error("Failed to save notes");
+    }
   };
+
+  const totalJobs = Object.values(stats).reduce((a, b) => a + b, 0);
+  const userString = localStorage.getItem("user") || "{}";
+  const user = JSON.parse(userString);
+  const username = user.name ? user.name.split(" ")[0] : "User";
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-
-      {/* Navbar */}
-      <div className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <Briefcase size={20} /> Job Tracker
-        </h1>
-
+    <div className="w-full pb-12">
+      <div className="flex justify-between items-end mb-8 mt-2">
+        <div>
+          <h1 className="text-3xl font-bold text-[#f1f5f9] tracking-tight mb-1.5">Good morning, {username} 👋</h1>
+          <p className="text-[#94a3b8] font-medium">Here's your job search summary</p>
+        </div>
         <button
-          onClick={logout}
-          className="flex items-center gap-2 bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+          onClick={() => setIsAddModalOpen(true)}
+          className="hidden sm:flex items-center gap-2 bg-[#6366f1] text-white px-5 py-2.5 rounded-xl font-medium hover:bg-[#4f46e5] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#6366f1]/20 transition-all"
         >
-          <LogOut size={16} /> Logout
+          <Plus size={18} />
+          Add Application
         </button>
       </div>
+      
+      {/* Mobile Add Button */}
+      <button
+        onClick={() => setIsAddModalOpen(true)}
+        className="flex sm:hidden items-center justify-center gap-2 w-full bg-[#6366f1] text-white px-5 py-3 rounded-xl font-medium hover:bg-[#4f46e5] mb-6 shadow-lg shadow-[#6366f1]/20"
+      >
+        <Plus size={18} />
+        Add Application
+      </button>
 
-      <div className="p-6 max-w-6xl mx-auto">
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <StatsCard title="Total Applications" count={totalJobs} subtitle={totalJobs > 0 ? `↑ 1 this week` : null} icon={Briefcase} color="slate" delay={0} />
+        <StatsCard title="Applied" count={stats.Applied || 0} icon={CheckCircle} color="indigo" delay={100} />
+        <StatsCard title="Interview" count={stats.Interview || 0} icon={Calendar} color="amber" delay={200} />
+        <StatsCard title="Rejected" count={stats.Rejected || 0} icon={XCircle} color="red" delay={300} />
+      </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {["Applied", "Interview", "Rejected"].map((key) => (
-            <div key={key} className="bg-white p-4 rounded-xl shadow flex justify-between items-center">
-              <div>
-                <p className="text-gray-500">{key}</p>
-                <h2 className="text-2xl font-bold">{stats[key] || 0}</h2>
-              </div>
-              <BarChart3 className="text-gray-400" />
+      {/* Main Content Split */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        
+        {/* Left Col: Table */}
+        <div className="xl:col-span-3">
+          <div className="bg-[#1e293b] border border-[#334155] rounded-2xl overflow-hidden shadow-sm h-full">
+            <div className="px-6 py-5 border-b border-[#334155]">
+              <h2 className="text-lg font-semibold text-[#f1f5f9]">Recent Applications</h2>
             </div>
-          ))}
+            {loading ? (
+              <div className="p-16 text-center text-[#94a3b8]">
+                <div className="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-[#6366f1] rounded-full mb-3"></div>
+                <p className="font-medium">Loading applications...</p>
+              </div>
+            ) : (
+              <JobTable 
+                jobs={jobs} 
+                onDelete={handleDeleteJob} 
+                onEditNotes={handleOpenNotes} 
+              />
+            )}
+          </div>
         </div>
 
-        {/* Add Job */}
-        <form onSubmit={handleAddJob} className="bg-white p-4 rounded-xl shadow mb-6">
-          <h2 className="font-semibold mb-3 flex items-center gap-2">
-            <PlusCircle size={18} /> Add Job
-          </h2>
-
-          <div className="grid grid-cols-4 gap-3">
-            <input
-              placeholder="Job Title"
-              className="border p-2 rounded"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-
-            <input
-              placeholder="Company"
-              className="border p-2 rounded"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-
-            <select
-              className="border p-2 rounded"
-              value={jobStatus}
-              onChange={(e) => setJobStatus(e.target.value)}
-            >
-              <option>Applied</option>
-              <option>Interview</option>
-              <option>Rejected</option>
-              <option>Offer</option>
-            </select>
-
-            <button className="bg-blue-500 text-white rounded hover:bg-blue-600">
-              Add
-            </button>
-          </div>
-        </form>
-
-        {/* Filters */}
-        <div className="flex gap-3 mb-6">
-          <div className="flex items-center border rounded px-2 w-1/2">
-            <Search size={16} className="text-gray-400" />
-            <input
-              placeholder="Search jobs..."
-              className="p-2 w-full outline-none"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-
-          <select
-            className="border p-2 rounded"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">All</option>
-            <option>Applied</option>
-            <option>Interview</option>
-            <option>Rejected</option>
-            <option>Offer</option>
-          </select>
-        </div>
-
-        {/* Jobs */}
-        <div className="grid gap-4">
-          {jobs.map((job) => (
-            <div
-              key={job._id}
-              className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
-            >
-              <div>
-                <h3 className="font-semibold text-lg">{job.title}</h3>
-                <p className="text-gray-500">{job.company}</p>
-
-                <span
-                  className={`inline-block mt-2 px-3 py-1 text-sm rounded ${statusColors[job.status]}`}
-                >
-                  {job.status}
-                </span>
-              </div>
-
-              <button
-                onClick={() => deleteJob(job._id)}
-                className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              >
-                <Trash2 size={16} /> Delete
-              </button>
-            </div>
-          ))}
+        {/* Right Col: Chart */}
+        <div className="xl:col-span-2">
+          <OverviewChart jobs={jobs} />
         </div>
 
       </div>
+
+      <AddJobModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAdd={handleAddJob} 
+      />
+
+      <NotesModal
+        isOpen={isNotesOpen}
+        onClose={() => setIsNotesOpen(false)}
+        job={selectedJob}
+        onSaveNotes={handleSaveNotes}
+      />
     </div>
   );
 };
