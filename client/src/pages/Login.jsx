@@ -1,25 +1,27 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../services/api"; // ✅ use centralized API
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { email, password }
-      );
+      const res = await api.post("/auth/login", { email, password });
 
       localStorage.setItem("token", res.data.token);
 
-      window.location.reload(); // redirect
-
+      window.location.reload(); // redirect to dashboard
     } catch (err) {
-      alert(err.response?.data?.msg || "Login failed");
+      setError(err.response?.data?.msg || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,12 +33,19 @@ const Login = () => {
       >
         <h2 className="text-xl font-bold mb-4 text-center">Login</h2>
 
+        {error && (
+          <p className="text-red-500 text-sm mb-2 text-center">
+            {error}
+          </p>
+        )}
+
         <input
           type="email"
           placeholder="Email"
           className="border p-2 w-full mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -45,10 +54,14 @@ const Login = () => {
           className="border p-2 w-full mb-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
-        <button className="bg-blue-500 text-white p-2 w-full">
-          Login
+        <button
+          disabled={loading}
+          className="bg-blue-500 text-white p-2 w-full rounded"
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>
