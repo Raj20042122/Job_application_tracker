@@ -10,6 +10,8 @@ import AddJobModal from "../components/AddJobModal";
 import EditJobModal from "../components/EditJobModal";
 import OverviewChart from "../components/OverviewChart";
 
+import UpcomingInterviews from "../components/UpcomingInterviews";
+
 const Dashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [stats, setStats] = useState({});
@@ -256,9 +258,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Right Col: Chart */}
-        <div className="xl:col-span-2 min-h-0 flex flex-col h-full">
-          <div className="h-full w-full">
+        {/* Right Col: Chart & Upcoming Interviews */}
+        <div className="xl:col-span-2 min-h-0 flex flex-col gap-4 h-full">
+          <div className="flex-1 min-h-0 w-full">
+            <UpcomingInterviews />
+          </div>
+          <div className="shrink-0 w-full">
             <OverviewChart jobs={jobs} />
           </div>
         </div>

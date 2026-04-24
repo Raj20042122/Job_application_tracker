@@ -140,3 +140,18 @@ exports.googleAuth = async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
+// DELETE ACCOUNT
+exports.deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    // Delete all jobs related to user
+    const Job = require("../models/Job");
+    await Job.deleteMany({ user: userId });
+    // Delete user
+    await User.findByIdAndDelete(userId);
+    res.json({ msg: "Account and all associated data deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};

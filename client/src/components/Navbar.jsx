@@ -90,8 +90,26 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 <div className="absolute right-0 mt-2 w-48 bg-[#0f172a] border border-slate-700 rounded-xl shadow-lg py-1 z-50">
                   <div className="px-4 py-3 border-b border-slate-700">
                     <p className="text-sm font-medium text-white truncate">{username}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">My Profile</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{user.email || 'User'}</p>
                   </div>
+
+                  <NavLink
+                    to="/profile"
+                    onClick={() => setShowDropdown(false)}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                  >
+                    <User size={16} />
+                    Profile
+                  </NavLink>
+
+                  <NavLink
+                    to="/settings"
+                    onClick={() => setShowDropdown(false)}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors border-b border-slate-700/50"
+                  >
+                    <User size={16} />
+                    Settings
+                  </NavLink>
 
                   <button
                     onClick={handleLogout}
@@ -134,7 +152,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
               </div>
               <div>
                 <p className="text-sm font-medium text-white truncate">{username}</p>
-                <p className="text-xs text-slate-400">My Profile</p>
+                <p className="text-xs text-slate-400">{user.email || 'User'}</p>
               </div>
             </div>
 
@@ -154,6 +172,32 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 {link.name}
               </NavLink>
             ))}
+
+            <div className="border-t border-slate-800 my-2 pt-2">
+              <NavLink
+                to="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive ? "bg-indigo-900/40 text-indigo-400" : "text-slate-400 hover:bg-slate-800"
+                  }`
+                }
+              >
+                Profile
+              </NavLink>
+              <NavLink
+                to="/settings"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive ? "bg-indigo-900/40 text-indigo-400" : "text-slate-400 hover:bg-slate-800"
+                  }`
+                }
+              >
+                Settings
+              </NavLink>
+            </div>
+
             <button
               onClick={handleLogout}
               className="w-full text-left flex items-center gap-2 px-3 py-2 mt-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-800 hover:text-red-300"

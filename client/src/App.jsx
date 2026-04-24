@@ -6,6 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/Navbar";
 import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+
 function App() {
   const token = localStorage.getItem("token");
   const [darkMode, setDarkMode] = useState(true);
@@ -35,6 +38,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/analyzer" element={<ResumeAnalyzer />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>

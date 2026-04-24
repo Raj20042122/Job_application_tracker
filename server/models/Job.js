@@ -25,6 +25,17 @@ const jobSchema = new mongoose.Schema(
     notes: {
       type: String
     },
+    interviewDate: {
+      type: Date
+    },
+    interviewTime: {
+      type: String
+    },
+    interviewType: {
+      type: String,
+      enum: ["Video call", "Phone call", "On-site", "Technical", "HR Round", "General"],
+      default: "Video call"
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"

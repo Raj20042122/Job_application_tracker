@@ -32,16 +32,16 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center px-4 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all duration-300 ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
-        <div className="px-6 py-4 border-b border-[#334155] flex justify-between items-center">
+      <div className={`relative bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden shadow-2xl transition-all duration-300 ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
+        <div className="px-6 py-4 border-b border-[#334155] flex justify-between items-center shrink-0">
           <h2 className="text-lg font-semibold text-[#f1f5f9]">Add New Application</h2>
-          <button onClick={onClose} className="text-[#94a3b8] hover:text-[#f1f5f9] transition-colors p-1">
+          <button type="button" onClick={onClose} className="text-[#94a3b8] hover:text-[#f1f5f9] transition-colors p-1">
             <X size={20} />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="p-6 overflow-y-auto custom-scrollbar space-y-4 flex-1">
             <div>
               <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Job Title</label>
               <input
@@ -99,7 +99,7 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
             </div>
           </div>
           
-          <div className="mt-8 flex gap-3">
+          <div className="p-6 border-t border-[#334155] bg-[#1e293b] shrink-0 flex gap-3">
             <button
               type="button"
               onClick={onClose}
