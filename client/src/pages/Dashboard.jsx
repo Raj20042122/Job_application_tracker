@@ -238,15 +238,6 @@ const Dashboard = () => {
                 />
               </div>
             )}
-            
-            <div className="px-6 py-4 border-t border-white/5 shrink-0 flex justify-center items-center bg-[rgba(17,25,40,0.75)]">
-              <button
-                className="flex items-center gap-2 text-[13px] font-medium text-[#6366F1] hover:text-[#8B5CF6] transition-colors bg-[#0B1220] border border-[rgba(255,255,255,0.06)] hover:border-[#6366F1]/30 px-4 py-2 rounded-lg"
-              >
-                View all applications
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </button>
-            </div>
           </div>
         </div>
 

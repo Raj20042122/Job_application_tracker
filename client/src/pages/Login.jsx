@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { LogIn, Briefcase, Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast from "react-hot-toast";
@@ -13,63 +13,28 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 1. Detect Mobile
-  const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry/i.test(navigator.userAgent);
-
-  // 2. Shared handler function
-  const handleGoogleResult = async (token) => {
-    setLoading(true);
-    try {
-      const res = await api.post("/auth/google", {
-        access_token: token,
-      });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      toast.success("Login successful");
-      window.location.reload();
-    } catch (err) {
-      toast.error(err.response?.data?.msg || "Google authentication failed.");
-      setLoading(false);
-    }
-  };
-
-  // 3. Handle redirect result on app load (Mobile flow)
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash && (hash.includes("access_token=") || hash.includes("error="))) {
-      setLoading(true); // Prevent blank screen flash
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-      const error = params.get("error");
-
-      // Clean URL immediately
-      window.history.replaceState(null, null, window.location.pathname);
-
-      if (error) {
-        toast.error("Google login failed: " + error);
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const res = await api.post("/auth/google", {
+          access_token: tokenResponse.access_token,
+        });
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        toast.success("Login successful");
+        window.location.reload();
+      } catch (err) {
+        toast.error(err.response?.data?.msg || "Google authentication failed.");
+        console.error("Google Auth Error:", err);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      if (accessToken) {
-        handleGoogleResult(accessToken);
-      }
-    }
-  }, []);
-
-  // 4. Use Redirect on Mobile, Popup on Desktop
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      handleGoogleResult(tokenResponse.access_token);
     },
-    onError: (err) => {
-      console.error("Google error:", err);
+    onError: (error) => {
+      console.error("Google Login Error:", error);
       toast.error("Google authentication failed.");
-      setLoading(false);
-    },
-    flow: 'implicit',
-    ux_mode: isMobile ? 'redirect' : 'popup',
-    redirect_uri: window.location.origin,
+    }
   });
 
   const handleSubmit = async (e) => {
@@ -292,7 +257,7 @@ const Login = () => {
           <div className="mt-6">
             <button
               type="button"
-              onClick={() => handleGoogleLogin()}
+              onClick={() => loginWithGoogle()}
               disabled={loading}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-700/50 rounded-xl shadow-sm bg-[#1a1f2e] text-sm font-medium text-white hover:bg-slate-800 transition-colors disabled:opacity-70"
             >
