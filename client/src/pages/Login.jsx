@@ -36,13 +36,22 @@ const Login = () => {
   // 3. Handle redirect result on app load (Mobile flow)
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash && hash.includes("access_token=")) {
+    if (hash && (hash.includes("access_token=") || hash.includes("error="))) {
       setLoading(true); // Prevent blank screen flash
       const params = new URLSearchParams(hash.substring(1));
       const accessToken = params.get("access_token");
+      const error = params.get("error");
+
+      // Clean URL immediately
+      window.history.replaceState(null, null, window.location.pathname);
+
+      if (error) {
+        toast.error("Google login failed: " + error);
+        setLoading(false);
+        return;
+      }
+
       if (accessToken) {
-        // Clean URL after capturing token
-        window.history.replaceState(null, null, window.location.pathname);
         handleGoogleResult(accessToken);
       }
     }
@@ -51,15 +60,16 @@ const Login = () => {
   // 4. Use Redirect on Mobile, Popup on Desktop
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      // This fires immediately for desktop popups
       handleGoogleResult(tokenResponse.access_token);
     },
-    onError: () => {
+    onError: (err) => {
+      console.error("Google error:", err);
       toast.error("Google authentication failed.");
       setLoading(false);
     },
     flow: 'implicit',
     ux_mode: isMobile ? 'redirect' : 'popup',
+    redirect_uri: window.location.origin,
   });
 
   const handleSubmit = async (e) => {
