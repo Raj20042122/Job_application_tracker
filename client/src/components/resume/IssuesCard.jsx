@@ -5,16 +5,16 @@ const IssuesCard = ({ issues }) => {
   if (!issues || issues.length === 0) return null;
 
   return (
-    <div className="saas-card p-6 border-l-4 border-l-red-500 mt-4">
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-        <AlertCircle size={20} className="text-red-500" />
+    <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 mt-4 shadow-sm">
+      <h3 className="text-[15px] font-bold text-[#f1f5f9] flex items-center gap-3 mb-6">
+        <AlertCircle size={18} className="text-[#ef4444]" />
         Issues Found
       </h3>
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {issues.map((issue, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-            <span className="min-w-[6px] h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0"></span>
-            <span>{issue}</span>
+          <li key={i} className="flex items-start gap-3 text-[13px] text-[#94a3b8]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#94a3b8] mt-1.5 shrink-0"></span>
+            <span className="leading-relaxed">{issue}</span>
           </li>
         ))}
       </ul>

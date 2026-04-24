@@ -1,52 +1,61 @@
-import React from 'react';
-import { Target } from 'lucide-react';
+import React, { useState } from 'react';
+import { Target, ChevronUp, ChevronDown } from 'lucide-react';
 
 const KeywordPanel = ({ matchPercent, matched, missing }) => {
+  const [expanded, setExpanded] = useState(true);
+
   return (
-    <div className="saas-card p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Target size={20} className="text-indigo-500" />
+    <div className="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-sm">
+      <div 
+        className="flex items-center justify-between p-6 cursor-pointer hover:bg-[#334155]/20 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <h3 className="text-[15px] font-bold text-[#f1f5f9] flex items-center gap-3">
+          <Target size={18} className="text-[#6366f1]" />
           Keyword Match
         </h3>
-        <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{matchPercent}%</span>
+        {expanded ? <ChevronUp size={18} className="text-[#94a3b8]" /> : <ChevronDown size={18} className="text-[#94a3b8]" />}
       </div>
 
-      <div className="mb-6">
-        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Matched Keywords ({matched.length})</h4>
-        <div className="flex flex-wrap gap-2">
-          {matched.length === 0 ? (
-            <p className="text-sm text-slate-500 italic">No keywords matched.</p>
-          ) : (
-            matched.map((kw, i) => (
-              <span 
-                key={i} 
-                className="px-3 py-1 bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/50 rounded-full text-xs font-medium hover:-translate-y-0.5 transition-transform cursor-default"
-              >
-                {kw}
-              </span>
-            ))
-          )}
-        </div>
-      </div>
+      {expanded && (
+        <div className="px-6 pb-6 border-t border-[#334155]/50 pt-6">
+          <div className="mb-8">
+            <h4 className="text-[13px] font-semibold text-[#f1f5f9] mb-4">Matched Keywords ({matched.length})</h4>
+            <div className="flex flex-wrap gap-2.5">
+              {matched.length === 0 ? (
+                <p className="text-[13px] text-[#94a3b8] italic">No keywords matched.</p>
+              ) : (
+                matched.map((kw, i) => (
+                  <span 
+                    key={i} 
+                    className="px-3 py-1.5 bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 rounded-lg text-[13px] font-medium"
+                  >
+                    {kw}
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
 
-      <div>
-        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Missing Keywords ({missing.length})</h4>
-        <div className="flex flex-wrap gap-2">
-          {missing.length === 0 ? (
-            <p className="text-sm text-slate-500 italic">Great job! No major missing keywords.</p>
-          ) : (
-            missing.map((kw, i) => (
-              <span 
-                key={i} 
-                className="px-3 py-1 bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/50 rounded-full text-xs font-medium hover:-translate-y-0.5 transition-transform cursor-default"
-              >
-                {kw}
-              </span>
-            ))
-          )}
+          <div>
+            <h4 className="text-[13px] font-semibold text-[#f1f5f9] mb-4">Missing Keywords ({missing.length})</h4>
+            <div className="flex flex-wrap gap-2.5">
+              {missing.length === 0 ? (
+                <p className="text-[13px] text-[#94a3b8] italic">Great job! No major missing keywords.</p>
+              ) : (
+                missing.map((kw, i) => (
+                  <span 
+                    key={i} 
+                    className="px-3 py-1.5 bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/20 rounded-lg text-[13px] font-medium"
+                  >
+                    {kw}
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

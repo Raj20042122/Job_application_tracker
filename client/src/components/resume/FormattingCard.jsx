@@ -1,55 +1,62 @@
 import React from 'react';
-import { Type, List, Mail, Phone, Link2 } from 'lucide-react';
+import { Type, List, Mail, Phone, Link2, MapPin, LayoutTemplate } from 'lucide-react';
 
 const FormattingCard = ({ formatting }) => {
-  const { wordCount, wordCountLabel, bulletPoints, hasEmail, hasPhone, hasLinks } = formatting;
+  const { wordCount, wordCountLabel, bulletPoints, hasEmail, hasPhone, hasLinks, hasLocation = true } = formatting;
 
   return (
-    <div className="saas-card p-6 mt-6">
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Formatting Quality</h3>
+    <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 shadow-sm mt-4">
+      <h3 className="text-[15px] font-bold text-[#f1f5f9] flex items-center gap-3 mb-6">
+        <LayoutTemplate size={18} className="text-[#a855f7]" />
+        Formatting Quality
+      </h3>
       
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col">
-          <div className="flex items-center gap-2 mb-2 text-slate-600 dark:text-slate-400">
-            <Type size={16} />
-            <span className="text-sm font-medium">Word Count</span>
+        <div className="p-4 bg-transparent rounded-xl border border-[#334155] flex flex-col">
+          <div className="flex items-center gap-2 mb-3 text-[#94a3b8]">
+            <Type size={14} />
+            <span className="text-[12px] font-medium">Word Count</span>
           </div>
-          <div className="flex items-end gap-2 mt-auto">
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">{wordCount}</span>
-            <span className={`text-xs font-bold px-2 py-1 rounded mb-1 ${
-              wordCountLabel === 'Ideal' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+          <div className="flex items-center gap-3 mt-auto">
+            <span className="text-2xl font-bold text-[#f1f5f9]">{wordCount}</span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+              wordCountLabel === 'Ideal' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#f59e0b]/10 text-[#f59e0b]'
             }`}>
               {wordCountLabel}
             </span>
           </div>
         </div>
 
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col">
-          <div className="flex items-center gap-2 mb-2 text-slate-600 dark:text-slate-400">
-            <List size={16} />
-            <span className="text-sm font-medium">Bullet Points</span>
+        <div className="p-4 bg-transparent rounded-xl border border-[#334155] flex flex-col">
+          <div className="flex items-center gap-2 mb-3 text-[#94a3b8]">
+            <List size={14} />
+            <span className="text-[12px] font-medium">Bullet Points</span>
           </div>
-          <div className="mt-auto">
-            <span className="text-2xl font-bold text-slate-900 dark:text-white">{bulletPoints}</span>
-            <span className="text-xs text-slate-500 ml-1">found</span>
+          <div className="flex items-center gap-3 mt-auto">
+            <span className="text-2xl font-bold text-[#f1f5f9]">{bulletPoints}</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#3b82f6]/10 text-[#3b82f6]">Good</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-        <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">Essentials Detected</h4>
-        <div className="flex gap-4">
-          <div className={`flex flex-col items-center gap-1 ${hasEmail ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
-            <Mail size={20} />
-            <span className="text-xs">Email</span>
+      <div className="mt-4 p-4 bg-transparent rounded-xl border border-[#334155]">
+        <h4 className="text-[12px] font-medium text-[#94a3b8] mb-4">Essentials Detected</h4>
+        <div className="flex justify-between items-center px-2">
+          <div className={`flex flex-col items-center gap-1.5 ${hasEmail ? 'text-[#22c55e]' : 'text-[#475569]'}`}>
+            <Mail size={18} />
+            <span className="text-[10px] font-medium">Email</span>
           </div>
-          <div className={`flex flex-col items-center gap-1 ${hasPhone ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
-            <Phone size={20} />
-            <span className="text-xs">Phone</span>
+          <div className={`flex flex-col items-center gap-1.5 ${hasPhone ? 'text-[#22c55e]' : 'text-[#475569]'}`}>
+            <Phone size={18} />
+            <span className="text-[10px] font-medium">Phone</span>
           </div>
-          <div className={`flex flex-col items-center gap-1 ${hasLinks ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
-            <Link2 size={20} />
-            <span className="text-xs">Links</span>
+          <div className={`flex flex-col items-center gap-1.5 ${hasLinks ? 'text-[#22c55e]' : 'text-[#475569]'}`}>
+            <Link2 size={18} />
+            <span className="text-[10px] font-medium">Link</span>
+          </div>
+          <div className={`flex flex-col items-center gap-1.5 ${hasLocation ? 'text-[#22c55e]' : 'text-[#475569]'}`}>
+            <MapPin size={18} />
+            <span className="text-[10px] font-medium">Location</span>
           </div>
         </div>
       </div>

@@ -6,7 +6,8 @@
 
 @layer base {
   body {
-    @apply bg-[#0f172a] text-[#f1f5f9] antialiased;
+    @apply text-[#f1f5f9] antialiased min-h-screen;
+    background-color: #0B1220;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }

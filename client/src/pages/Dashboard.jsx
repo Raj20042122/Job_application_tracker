@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
-import { Plus, Briefcase, Calendar, XCircle, CheckCircle, Search } from "lucide-react";
+import { Plus, Briefcase, Calendar, XCircle, CheckCircle, Search, FileText, TrendingUp } from "lucide-react";
 import toast from "react-hot-toast";
 
 import StatsCard from "../components/StatsCard";
@@ -146,14 +146,14 @@ const Dashboard = () => {
 
   return (
     <div className="w-full h-full flex flex-col pb-2">
-      <div className="flex justify-between items-end mb-4 mt-1 shrink-0">
+      <div className="flex justify-between items-end mb-6 mt-2 shrink-0">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#f1f5f9] tracking-tight mb-1">Good morning, {username} 👋</h1>
-          <p className="text-[#94a3b8] font-medium text-sm md:text-base">Here's your job search summary</p>
+          <h1 className="text-2xl md:text-[28px] font-bold text-white tracking-tight mb-1.5">Good morning, {username.toUpperCase()} 👋</h1>
+          <p className="text-[#9CA3AF] font-medium text-[15px]">Here's your job search summary</p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="hidden sm:flex items-center gap-2 bg-[#6366f1] text-white px-5 py-2.5 rounded-xl font-medium hover:bg-[#4f46e5] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#6366f1]/20 transition-all"
+          className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white px-5 py-2.5 rounded-xl font-medium hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all"
         >
           <Plus size={18} />
           Add Application
@@ -163,14 +163,14 @@ const Dashboard = () => {
       {/* Mobile Add Button */}
       <button
         onClick={() => setIsAddModalOpen(true)}
-        className="flex sm:hidden items-center justify-center gap-2 w-full bg-[#6366f1] text-white px-5 py-3 rounded-xl font-medium hover:bg-[#4f46e5] mb-4 shrink-0 shadow-lg shadow-[#6366f1]/20"
+        className="flex sm:hidden items-center justify-center gap-2 w-full bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white px-5 py-3 rounded-xl font-medium hover:scale-[1.02] mb-6 shrink-0 shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all"
       >
         <Plus size={18} />
         Add Application
       </button>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
         <StatsCard title="Total Applications" count={totalJobs} subtitle={totalJobs > 0 ? `↑ 1 this week` : null} icon={Briefcase} color="slate" delay={0} />
         <StatsCard title="Applied" count={stats.Applied || 0} icon={CheckCircle} color="indigo" delay={100} />
         <StatsCard title="Interview" count={stats.Interview || 0} icon={Calendar} color="amber" delay={200} />
@@ -178,51 +178,54 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Split */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 flex-1 min-h-0 pb-2">
+      <div className="grid grid-cols-1 xl:grid-cols-10 gap-6 flex-1 min-h-0 pb-2">
         
-        {/* Left Col: Table */}
-        <div className="xl:col-span-3 min-h-0 flex flex-col">
-          <div className="bg-[#1e293b] border border-[#334155] rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
-            <div className="px-4 py-3 border-b border-[#334155] shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-semibold text-[#f1f5f9] whitespace-nowrap">Recent Applications</h2>
-              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div className="relative flex-1 sm:w-40 md:w-48">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" />
+        {/* Left Col: Table (70%) */}
+        <div className="xl:col-span-7 min-h-0 flex flex-col">
+          <div className="bg-[rgba(17,25,40,0.75)] border border-[rgba(255,255,255,0.06)] rounded-2xl overflow-hidden shadow-sm h-full flex flex-col hover:border-white/10 transition-colors">
+            <div className="px-5 py-5 border-b border-white/5 shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-[17px] font-semibold text-white whitespace-nowrap flex items-center gap-2.5">
+                <FileText size={18} className="text-[#6366f1]" />
+                Recent Applications
+              </h2>
+              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <div className="relative flex-1 sm:w-48 md:w-56">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
                   <input
                     type="text"
                     placeholder="Search jobs..."
-                    className="w-full bg-[#0f172a] border border-[#334155] rounded-lg pl-8 pr-3 py-1.5 text-sm text-[#f1f5f9] focus:outline-none focus:border-[#6366f1]"
+                    className="w-full bg-[#0B1220] border border-[rgba(255,255,255,0.06)] rounded-lg pl-8 pr-3 py-1.5 text-[13px] text-white focus:outline-none focus:border-[#6366f1] transition-all placeholder:text-[#6B7280]"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
                 <select
-                  className="bg-[#0f172a] border border-[#334155] rounded-lg px-2 py-1.5 text-sm text-[#f1f5f9] focus:outline-none focus:border-[#6366f1]"
+                  className="bg-[#0B1220] border border-[rgba(255,255,255,0.06)] rounded-lg px-3 py-1.5 text-[13px] text-[#E5E7EB] focus:outline-none focus:border-[#6366f1] transition-all outline-none cursor-pointer"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
                 >
-                  <option value="">All Status</option>
-                  <option value="Applied">Applied</option>
-                  <option value="Interview">Interview</option>
-                  <option value="Offer">Offer</option>
-                  <option value="Rejected">Rejected</option>
+                  <option value="" className="bg-[#0B1220]">All Status</option>
+                  <option value="Applied" className="bg-[#0B1220]">Applied</option>
+                  <option value="Interview" className="bg-[#0B1220]">Interview</option>
+                  <option value="Offer" className="bg-[#0B1220]">Offer</option>
+                  <option value="Rejected" className="bg-[#0B1220]">Rejected</option>
                 </select>
                 <select
-                  className="bg-[#0f172a] border border-[#334155] rounded-lg px-2 py-1.5 text-sm text-[#f1f5f9] focus:outline-none focus:border-[#6366f1]"
+                  className="bg-[#0B1220] border border-[rgba(255,255,255,0.06)] rounded-lg px-3 py-1.5 text-[13px] text-[#E5E7EB] focus:outline-none focus:border-[#6366f1] transition-all outline-none cursor-pointer"
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
                 >
-                  <option value="-createdAt">Newest</option>
-                  <option value="company">Company A-Z</option>
-                  <option value="status">Status</option>
+                  <option value="-createdAt" className="bg-[#0B1220]">Newest</option>
+                  <option value="company" className="bg-[#0B1220]">Company A-Z</option>
+                  <option value="status" className="bg-[#0B1220]">Status</option>
                 </select>
               </div>
             </div>
             
             {loading ? (
-              <div className="p-16 text-center text-[#94a3b8] flex-1 flex flex-col justify-center items-center">
+              <div className="p-16 text-center text-[#9CA3AF] flex-1 flex flex-col justify-center items-center">
                 <div className="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-[#6366f1] rounded-full mb-3"></div>
-                <p className="font-medium">Loading applications...</p>
+                <p className="font-medium text-[13px]">Loading applications...</p>
               </div>
             ) : (
               <div className="flex-1 overflow-auto">
@@ -236,35 +239,34 @@ const Dashboard = () => {
               </div>
             )}
             
-            {totalPages > 1 && (
-              <div className="px-6 py-2.5 border-t border-[#334155] shrink-0 flex justify-between items-center bg-[#1e293b]">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  className="px-3 py-1 text-sm bg-[#0f172a] hover:bg-[#334155] border border-[#334155] rounded-lg disabled:opacity-50 transition-colors text-[#f1f5f9]"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-[#94a3b8]">Page {page} of {totalPages}</span>
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  className="px-3 py-1 text-sm bg-[#0f172a] hover:bg-[#334155] border border-[#334155] rounded-lg disabled:opacity-50 transition-colors text-[#f1f5f9]"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <div className="px-6 py-4 border-t border-white/5 shrink-0 flex justify-center items-center bg-[rgba(17,25,40,0.75)]">
+              <button
+                className="flex items-center gap-2 text-[13px] font-medium text-[#6366F1] hover:text-[#8B5CF6] transition-colors bg-[#0B1220] border border-[rgba(255,255,255,0.06)] hover:border-[#6366F1]/30 px-4 py-2 rounded-lg"
+              >
+                View all applications
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Col: Chart & Upcoming Interviews */}
-        <div className="xl:col-span-2 min-h-0 flex flex-col gap-4 h-full">
-          <div className="flex-1 min-h-0 w-full">
+        {/* Right Col: Chart & Upcoming Interviews (30%) */}
+        <div className="xl:col-span-3 min-h-0 flex flex-col gap-6 h-full">
+          <div className="flex-1 min-h-0 w-full overflow-hidden">
             <UpcomingInterviews />
           </div>
           <div className="shrink-0 w-full">
             <OverviewChart jobs={jobs} />
+          </div>
+          {/* Motivation Card */}
+          <div className="shrink-0 w-full bg-[rgba(17,25,40,0.75)] border border-[rgba(255,255,255,0.06)] rounded-2xl p-4 flex items-center gap-4 hover:shadow-[0_0_20px_rgba(34,197,94,0.05)] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center shrink-0">
+              <TrendingUp size={18} className="text-[#22C55E]" strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <p className="text-[13px] font-semibold text-white tracking-wide">Keep going! You've applied to 33% more jobs this week.</p>
+              <p className="text-[12px] text-[#9CA3AF] mt-0.5">Stay consistent and you'll see great results.</p>
+            </div>
           </div>
         </div>
 

@@ -51,12 +51,12 @@ const UpcomingInterviews = () => {
 
   if (loading) {
     return (
-      <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 h-full flex flex-col">
-        <h3 className="text-[#f1f5f9] font-semibold text-lg mb-4">Upcoming Interviews</h3>
+      <div className="bg-[#151b2b] border border-white/5 rounded-2xl p-5 h-full flex flex-col shadow-sm">
+        <h3 className="text-white font-semibold text-lg mb-4">Upcoming Interviews</h3>
         <div className="flex-1 overflow-hidden flex flex-col gap-3">
           <div className="animate-pulse flex flex-col gap-3">
-            <div className="h-[74px] bg-[#0f172a] border border-[#334155] rounded-xl"></div>
-            <div className="h-[74px] bg-[#0f172a] border border-[#334155] rounded-xl"></div>
+            <div className="h-[74px] bg-white/5 border border-white/5 rounded-xl"></div>
+            <div className="h-[74px] bg-white/5 border border-white/5 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -64,11 +64,11 @@ const UpcomingInterviews = () => {
   }
 
   return (
-    <div className="bg-[#1e293b] border border-[#334155] rounded-xl p-6 h-full flex flex-col">
-      <h3 className="text-[#f1f5f9] font-semibold text-lg mb-4">Upcoming Interviews</h3>
+    <div className="bg-[#151b2b] border border-white/5 rounded-2xl p-5 h-full flex flex-col shadow-sm">
+      <h3 className="text-white font-semibold text-lg mb-4">Upcoming Interviews</h3>
       <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-3">
         {interviews.length === 0 ? (
-          <div className="bg-[#0f172a] border border-[#334155] rounded-xl p-6 text-center text-[#94a3b8] text-sm h-full flex items-center justify-center">
+          <div className="bg-transparent border border-white/5 rounded-xl p-6 text-center text-[#94a3b8] text-sm h-full flex items-center justify-center">
             No upcoming interviews scheduled
           </div>
         ) : (
@@ -77,18 +77,18 @@ const UpcomingInterviews = () => {
             const badge = getBadgeStyle(days);
             
             return (
-              <div key={interview._id} className="bg-[#0f172a] border border-[#334155] rounded-xl p-3 flex items-center gap-4 shrink-0">
-                <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0 ${getDateBoxStyle(days)}`}>
-                  <span className="text-lg font-bold leading-tight">{getDayNum(interview.interviewDate)}</span>
-                  <span className="text-[10px] font-semibold leading-tight opacity-90">{getMonthAbbrev(interview.interviewDate)}</span>
+              <div key={interview._id} className="bg-[rgba(17,25,40,0.75)] border border-[rgba(255,255,255,0.06)] rounded-xl p-3 flex items-center gap-4 shrink-0 hover:bg-[#1e293b] hover:border-white/10 transition-colors cursor-default group">
+                <div className={`w-[52px] h-[52px] rounded-2xl flex flex-col items-center justify-center shrink-0 ${days <= 7 ? 'bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] text-white shadow-[0_0_15px_rgba(99,102,241,0.3)]' : 'bg-[#1e293b] text-white'} group-hover:scale-105 transition-transform`}>
+                  <span className="text-[17px] font-bold leading-tight">{getDayNum(interview.interviewDate)}</span>
+                  <span className="text-[10px] font-semibold leading-tight opacity-90 tracking-wide">{getMonthAbbrev(interview.interviewDate)}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-[#f1f5f9] font-semibold text-[15px] truncate">{interview.title}</h4>
-                  <p className="text-[#94a3b8] text-[13px] truncate">
-                    {interview.company} &middot; {interview.interviewType} &middot; {interview.interviewTime || 'TBD'}
+                  <h4 className="text-white font-semibold text-[15px] truncate">{interview.title}</h4>
+                  <p className="text-[#94a3b8] text-[13px] truncate mt-0.5">
+                    {interview.company} <span className="px-1.5">•</span> {interview.interviewType} <span className="px-1.5">•</span> {interview.interviewTime || 'TBD'}
                   </p>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-[13px] font-medium whitespace-nowrap border border-transparent ${badge.bg} ${badge.text}`}>
+                <div className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold tracking-wide whitespace-nowrap border border-white/5 ${badge.bg} ${badge.text}`}>
                   {badge.label}
                 </div>
               </div>

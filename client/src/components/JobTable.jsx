@@ -47,25 +47,25 @@ const JobTable = ({ jobs, onEditNotes, onDelete, onUpdateStatus, onEditJob }) =>
   return (
     <div className={`overflow-x-auto transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       <table className="w-full relative">
-        <thead className="sticky top-0 bg-[#1e293b] z-10 shadow-sm">
-          <tr className="border-b border-[#334155] text-left text-[#94a3b8] text-xs font-semibold tracking-wider uppercase">
+        <thead className="sticky top-0 bg-[#151b2b] z-10 shadow-sm">
+          <tr className="border-b border-white/5 text-left text-[#94a3b8] text-xs font-semibold tracking-wider uppercase">
             <th className="px-6 py-4">Job Details</th>
             <th className="px-6 py-4">Status</th>
             <th className="px-6 py-4">Date</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#334155]">
+        <tbody className="divide-y divide-white/5">
           {jobs.map((job) => (
-            <tr key={job._id} className="group hover:bg-[#334155]/10 transition-colors">
+            <tr key={job._id} className="group hover:bg-white/[0.02] transition-colors">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#0f172a] border border-[#334155] flex items-center justify-center text-[#f1f5f9] font-bold text-sm shadow-sm shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
                     {getInitials(job.company)}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-[#f1f5f9] font-medium truncate" title={job.title || job.jobTitle}>
+                      <p className="text-white font-semibold truncate text-[15px]" title={job.title || job.jobTitle}>
                         {job.title || job.jobTitle}
                       </p>
                       {job.link && (
@@ -73,14 +73,14 @@ const JobTable = ({ jobs, onEditNotes, onDelete, onUpdateStatus, onEditJob }) =>
                           href={job.link} 
                           target="_blank" 
                           rel="noreferrer" 
-                          className="text-[#6366f1] hover:text-[#4f46e5] hover:scale-110 transition-all shrink-0" 
+                          className="text-[#6366f1] hover:text-[#a855f7] hover:scale-110 transition-all shrink-0" 
                           title="View Job Post"
                         >
                           <ExternalLink size={14} />
                         </a>
                       )}
                     </div>
-                    <p className="text-[#94a3b8] text-sm truncate" title={job.company}>{job.company}</p>
+                    <p className="text-[#94a3b8] text-[13px] truncate" title={job.company}>{job.company}</p>
                   </div>
                 </div>
               </td>
@@ -88,34 +88,34 @@ const JobTable = ({ jobs, onEditNotes, onDelete, onUpdateStatus, onEditJob }) =>
                 <select
                   value={job.status}
                   onChange={(e) => onUpdateStatus(job._id, e.target.value)}
-                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-[#1e293b] appearance-none pr-6 bg-no-repeat bg-right ${getStatusColor(job.status)}`}
+                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-[#151b2b] appearance-none pr-7 bg-no-repeat bg-right ${getStatusColor(job.status)}`}
                   style={{
                     backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                     backgroundSize: '14px',
-                    backgroundPosition: 'calc(100% - 6px) center'
+                    backgroundPosition: 'calc(100% - 8px) center'
                   }}
                 >
-                  <option value="Applied" className="bg-[#0f172a] text-[#f1f5f9]">Applied</option>
-                  <option value="Interview" className="bg-[#0f172a] text-[#f1f5f9]">Interview</option>
-                  <option value="Offer" className="bg-[#0f172a] text-[#f1f5f9]">Offer</option>
-                  <option value="Rejected" className="bg-[#0f172a] text-[#f1f5f9]">Rejected</option>
+                  <option value="Applied" className="bg-[#1e293b] text-[#f1f5f9]">Applied</option>
+                  <option value="Interview" className="bg-[#1e293b] text-[#f1f5f9]">Interview</option>
+                  <option value="Offer" className="bg-[#1e293b] text-[#f1f5f9]">Offer</option>
+                  <option value="Rejected" className="bg-[#1e293b] text-[#f1f5f9]">Rejected</option>
                 </select>
               </td>
-              <td className="px-6 py-4 text-[#94a3b8] text-sm whitespace-nowrap">
+              <td className="px-6 py-4 text-[#94a3b8] text-[13px] font-medium whitespace-nowrap">
                 {timeAgo(job.createdAt || job.date || job.dateApplied)}
               </td>
               <td className="px-6 py-4">
-                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => onEditNotes(job)}
-                    className="p-2 text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#334155] rounded-lg transition-colors"
+                    className="p-2 text-[#94a3b8] hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                     title="View/Edit Notes"
                   >
                     <FileText size={16} />
                   </button>
                   <button
                     onClick={() => onEditJob(job)}
-                    className="p-2 text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#334155] rounded-lg transition-colors"
+                    className="p-2 text-[#94a3b8] hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                     title="Edit Job Details"
                   >
                     <Pencil size={16} />
