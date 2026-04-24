@@ -75,3 +75,54 @@ exports.login = async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
+// GOOGLE AUTH
+exports.googleAuth = async (req, res) => {
+  try {
+    const { access_token } = req.body;
+
+    if (!access_token) {
+      return res.status(400).json({ msg: "Access token is required" });
+    }
+
+    // Fetch user details from Google
+    const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    if (!response.ok) {
+      return res.status(401).json({ msg: "Invalid Google token" });
+    }
+
+    const data = await response.json();
+    const { email, name, sub } = data;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create user with a random secure password since they use Google Auth
+      const randomPassword = await bcrypt.hash(sub + Math.random().toString(), 10);
+      user = await User.create({
+        name,
+        email,
+        password: randomPassword
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "fallback_secret",
+      { expiresIn: "7d" }
+    );
+
+    // Remove password before sending
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.json({ token, user: userObj });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};

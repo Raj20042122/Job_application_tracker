@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-const AddJobModal = ({ isOpen, onClose, onAdd }) => {
+const EditJobModal = ({ isOpen, onClose, onEdit, job }) => {
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
   const [status, setStatus] = useState('Applied');
@@ -12,21 +12,23 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
   useEffect(() => {
     if (isOpen) {
       setMounted(true);
+      if (job) {
+        setTitle(job.title || job.jobTitle || '');
+        setCompany(job.company || '');
+        setStatus(job.status || 'Applied');
+        setLink(job.link || '');
+        setNotes(job.notes || '');
+      }
     } else {
       setTimeout(() => setMounted(false), 300);
     }
-  }, [isOpen]);
+  }, [isOpen, job]);
 
   if (!isOpen && !mounted) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAdd({ title, company, status, link, notes });
-    setTitle('');
-    setCompany('');
-    setStatus('Applied');
-    setLink('');
-    setNotes('');
+    onEdit(job._id, { title, company, status, link, notes });
   };
 
   return (
@@ -34,7 +36,7 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transition-all duration-300 ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
         <div className="px-6 py-4 border-b border-[#334155] flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-[#f1f5f9]">Add New Application</h2>
+          <h2 className="text-lg font-semibold text-[#f1f5f9]">Edit Application</h2>
           <button onClick={onClose} className="text-[#94a3b8] hover:text-[#f1f5f9] transition-colors p-1">
             <X size={20} />
           </button>
@@ -111,7 +113,7 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
               type="submit"
               className="flex-1 py-2.5 px-4 rounded-xl bg-[#6366f1] text-white hover:bg-[#4f46e5] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#6366f1]/20 transition-all font-medium"
             >
-              Add Application
+              Save Changes
             </button>
           </div>
         </form>
@@ -120,4 +122,4 @@ const AddJobModal = ({ isOpen, onClose, onAdd }) => {
   );
 };
 
-export default AddJobModal;
+export default EditJobModal;

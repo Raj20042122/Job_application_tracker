@@ -5,7 +5,7 @@ const IssuesCard = ({ issues }) => {
   if (!issues || issues.length === 0) return null;
 
   return (
-    <div className="saas-card p-6 border-l-4 border-l-red-500 mt-6">
+    <div className="saas-card p-6 border-l-4 border-l-red-500 mt-4">
       <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
         <AlertCircle size={20} className="text-red-500" />
         Issues Found

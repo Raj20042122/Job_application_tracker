@@ -19,6 +19,9 @@ const jobSchema = new mongoose.Schema(
       type: Date,
       default: Date.now
     },
+    link: {
+      type: String
+    },
     notes: {
       type: String
     },

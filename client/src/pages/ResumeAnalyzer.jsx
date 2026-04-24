@@ -52,17 +52,19 @@ const ResumeAnalyzer = () => {
   };
 
   return (
-    <div className="w-full">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-500">
+    <div className="w-full h-full">
+      <main className={`max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 animate-in fade-in duration-500 ${status === 'idle' ? 'min-h-[calc(100vh-140px)] flex flex-col justify-center' : ''}`}>
         
         {status === 'idle' && (
-          <UploadZone 
-            onFileSelect={setFile} 
-            jobDescription={jobDescription}
-            setJobDescription={setJobDescription}
-            onAnalyze={handleAnalyze}
-            file={file}
-          />
+          <div className="w-full pb-10">
+            <UploadZone 
+              onFileSelect={setFile} 
+              jobDescription={jobDescription}
+              setJobDescription={setJobDescription}
+              onAnalyze={handleAnalyze}
+              file={file}
+            />
+          </div>
         )}
 
         {status === 'loading' && (

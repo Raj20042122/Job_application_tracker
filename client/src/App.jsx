@@ -1,32 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
 import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 
 function App() {
   const token = localStorage.getItem("token");
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   return (
     <BrowserRouter>
       <Toaster 
         position="top-right" 
         toastOptions={{
-          className: '!bg-[#1e293b] !text-[#f1f5f9] !border !border-[#334155]',
+          className: darkMode ? '!bg-[#1e293b] !text-[#f1f5f9] !border !border-[#334155]' : '',
         }}
       />
       
       {token ? (
-        <div className="min-h-screen bg-[#0f172a] text-[#f1f5f9] font-sans flex">
-          <Sidebar />
-          <div className="flex-1 md:pl-64 flex flex-col min-h-screen transition-all">
-            <main className="flex-1 p-6 md:p-10 w-full max-w-[1600px] mx-auto">
+        <div className={`min-h-screen font-sans flex flex-col ${darkMode ? 'bg-[#0f172a] text-[#f1f5f9]' : 'bg-gray-50 text-gray-900'}`}>
+          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+          <div className="flex-1 flex flex-col transition-all">
+            <main className="flex-1 p-4 md:p-6 w-full max-w-[1600px] mx-auto">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/analyzer" element={<ResumeAnalyzer />} />
@@ -36,7 +41,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-[#0f172a] text-[#f1f5f9] font-sans">
+        <div className={`min-h-screen font-sans ${darkMode ? 'bg-[#0f172a] text-[#f1f5f9]' : 'bg-gray-50 text-gray-900'}`}>
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="*" element={<Navigate to="/" replace />} />

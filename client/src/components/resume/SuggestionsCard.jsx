@@ -21,7 +21,7 @@ const SuggestionsCard = ({ suggestions }) => {
   };
 
   return (
-    <div className="saas-card p-6 mt-6">
+    <div className="saas-card p-6 mt-4">
       <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
         <Lightbulb size={20} className="text-yellow-500" />
         How to Improve

@@ -3,7 +3,7 @@ import { Target } from 'lucide-react';
 
 const KeywordPanel = ({ matchPercent, matched, missing }) => {
   return (
-    <div className="saas-card p-6 h-full">
+    <div className="saas-card p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Target size={20} className="text-indigo-500" />

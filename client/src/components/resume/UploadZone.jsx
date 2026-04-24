@@ -18,10 +18,10 @@ const UploadZone = ({ onFileSelect, jobDescription, setJobDescription, onAnalyze
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Resume Analyzer</h1>
-        <p className="text-slate-500 dark:text-slate-400">Upload your resume to get an instant ATS compatibility score and actionable feedback.</p>
+    <div className="max-w-3xl mx-auto w-full space-y-6">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Resume Analyzer</h1>
+        <p className="text-base text-slate-500 dark:text-slate-400">Upload your resume to get an instant ATS compatibility score and actionable feedback.</p>
       </div>
 
       <div 
@@ -49,13 +49,13 @@ const UploadZone = ({ onFileSelect, jobDescription, setJobDescription, onAnalyze
         </div>
       </div>
 
-      <div className="saas-card p-6">
+      <div className="saas-card p-5">
         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Target Job Description (Optional)
         </label>
         <textarea
           rows={4}
-          className="saas-input resize-none"
+          className="saas-input resize-none py-3 text-base"
           placeholder="Paste the job description here to check for missing keywords..."
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}

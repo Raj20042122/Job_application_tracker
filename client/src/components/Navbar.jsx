@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, Moon, Sun, LogOut, Menu, X } from 'lucide-react';
+import { Briefcase, Moon, Sun, LogOut, Menu, X, User } from 'lucide-react';
 
 const Navbar = ({ darkMode, setDarkMode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,6 +17,21 @@ const Navbar = ({ darkMode, setDarkMode }) => {
     { name: "Dashboard", path: "/" },
     { name: "Resume Analyzer", path: "/analyzer" }
   ];
+
+  const userString = localStorage.getItem("user") || "{}";
+  const user = JSON.parse(userString);
+  const username = user.name || "User";
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 bg-[#0B1120] border-b border-slate-800 shadow-lg transition-colors duration-300">
@@ -55,13 +72,37 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             >
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
+            
+            {/* Profile Dropdown */}
+            <div className="relative ml-2" ref={dropdownRef}>
+              <button 
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 hover:bg-slate-800 p-1 pr-3 rounded-full transition-colors border border-transparent hover:border-slate-700"
+              >
+                <div className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                  {username.substring(0, 2).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-slate-300 hidden md:block">{username}</span>
+              </button>
+
+              {/* Dropdown Menu */}
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#0f172a] border border-slate-700 rounded-xl shadow-lg py-1 z-50">
+                  <div className="px-4 py-3 border-b border-slate-700">
+                    <p className="text-sm font-medium text-white truncate">{username}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">My Profile</p>
+                  </div>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -86,6 +127,17 @@ const Navbar = ({ darkMode, setDarkMode }) => {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-[#0B1120] absolute w-full shadow-xl">
           <div className="px-4 pt-2 pb-4 space-y-1">
+            {/* User Info in Mobile Menu */}
+            <div className="px-3 py-3 border-b border-slate-800 mb-2 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-base">
+                {username.substring(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white truncate">{username}</p>
+                <p className="text-xs text-slate-400">My Profile</p>
+              </div>
+            </div>
+
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
@@ -104,7 +156,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             ))}
             <button
               onClick={handleLogout}
-              className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-slate-400 hover:bg-slate-800"
+              className="w-full text-left flex items-center gap-2 px-3 py-2 mt-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-800 hover:text-red-300"
             >
               <LogOut size={18} />
               Logout
