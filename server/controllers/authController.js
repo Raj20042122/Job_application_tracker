@@ -79,23 +79,37 @@ exports.login = async (req, res) => {
 // GOOGLE AUTH
 exports.googleAuth = async (req, res) => {
   try {
-    const { access_token } = req.body;
+    const { access_token, id_token } = req.body;
 
-    if (!access_token) {
-      return res.status(400).json({ msg: "Access token is required" });
+    if (!access_token && !id_token) {
+      return res.status(400).json({ msg: "Google token is required" });
     }
 
-    // Fetch user details from Google
-    const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
+    let email, name, sub;
 
-    if (!response.ok) {
-      return res.status(401).json({ msg: "Invalid Google token" });
+    if (id_token) {
+      // Verify id_token
+      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${id_token}`);
+      if (!response.ok) {
+        return res.status(401).json({ msg: "Invalid Google id_token" });
+      }
+      const data = await response.json();
+      email = data.email;
+      name = data.name;
+      sub = data.sub;
+    } else {
+      // Fetch user details from Google using access_token
+      const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      if (!response.ok) {
+        return res.status(401).json({ msg: "Invalid Google access_token" });
+      }
+      const data = await response.json();
+      email = data.email;
+      name = data.name;
+      sub = data.sub;
     }
-
-    const data = await response.json();
-    const { email, name, sub } = data;
 
     // Check if user exists
     let user = await User.findOne({ email });
