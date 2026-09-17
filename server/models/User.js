@@ -4,16 +4,30 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true,
+      trim: true
     },
     password: {
       type: String,
-      required: true
+      required: function () {
+        return !this.googleId;
+      }
+    },
+    googleId: {
+      type: String,
+      default: null,
+      index: true
+    },
+    avatar: {
+      type: String,
+      default: ""
     },
     jobTitle: {
       type: String,

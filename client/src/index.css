@@ -1,40 +1,133 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-main: #080B11;
+    --bg-card: #10141E;
+    --bg-card-hover: #151B29;
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-highlight: rgba(99, 102, 241, 0.3);
+    --primary: #6366F1;
+    --primary-hover: #4F46E5;
+    --accent: #8B5CF6;
+  }
+
   body {
-    @apply text-[#f1f5f9] antialiased min-h-screen;
-    background-color: #0B1220;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: #F1F5F9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
 @layer components {
-  .saas-card {
-    @apply bg-[#1e293b] rounded-2xl shadow-sm border border-[#334155] transition-colors duration-300;
+  /* Linear-style Charcoal Cards */
+  .jt-card {
+    background-color: #10141E;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .saas-input {
-    @apply w-full rounded-xl border border-[#334155] bg-[#0f172a] px-4 py-3 text-[#f1f5f9] focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-[#0f172a] outline-none transition-all;
+
+  .jt-card-hover {
+    background-color: #10141E;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .saas-button {
-    @apply inline-flex items-center justify-center rounded-xl bg-[#6366f1] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#4f46e5] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#6366f1]/20 focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:ring-offset-2 focus:ring-offset-[#0f172a] disabled:opacity-50 disabled:cursor-not-allowed transition-all;
+
+  .jt-card-hover:hover {
+    background-color: #131926;
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Primary Button with subtle glow */
+  .jt-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm text-white transition-all;
+    background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+    box-shadow: 0 0 20px -4px rgba(99, 102, 241, 0.5);
+  }
+
+  .jt-btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px -2px rgba(99, 102, 241, 0.65);
+  }
+
+  .jt-btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Secondary / Ghost Button */
+  .jt-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm text-slate-300 transition-all;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .jt-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Input fields */
+  .jt-input {
+    @apply w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-100 transition-all outline-none;
+    background: #0B0E17;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .jt-input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  .jt-input::placeholder {
+    color: #64748B;
+  }
+
+  /* Status Pills */
+  .badge-wishlist {
+    @apply bg-slate-500/10 text-slate-400 border border-slate-500/20;
+  }
+  .badge-applied {
+    @apply bg-blue-500/10 text-blue-400 border border-blue-500/20;
+  }
+  .badge-oa {
+    @apply bg-purple-500/10 text-purple-400 border border-purple-500/20;
+  }
+  .badge-interview {
+    @apply bg-amber-500/10 text-amber-400 border border-amber-500/20;
+  }
+  .badge-offer {
+    @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+  }
+  .badge-rejected {
+    @apply bg-rose-500/10 text-rose-400 border border-rose-500/20;
   }
 }
 
-/* Custom Scrollbar for clean look */
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-[#334155] rounded-full;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-[#475569];
+  background: rgba(255, 255, 255, 0.22);
 }

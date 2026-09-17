@@ -1,17 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, Moon, Sun, LogOut, Menu, X, User } from 'lucide-react';
+import { Briefcase, Moon, Sun, Menu, X, User } from 'lucide-react';
 
 const Navbar = ({ darkMode, setDarkMode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.reload();
-  };
 
   const navLinks = [
     { name: "Dashboard", path: "/" },
@@ -122,16 +117,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                       Settings
                     </NavLink>
                   </div>
-
-                  <div className="px-2 border-t border-white/5 pt-1">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-3 py-2 mt-1 text-[13px] font-medium text-[#ef4444] hover:bg-[#ef4444]/10 rounded-lg transition-colors"
-                    >
-                      <LogOut size={16} />
-                      Logout
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
@@ -211,14 +196,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
                 Settings
               </NavLink>
             </div>
-
-            <button
-              onClick={handleLogout}
-              className="w-full text-left flex items-center gap-2 px-3 py-2 mt-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-800 hover:text-red-300"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
           </div>
         </div>
       )}

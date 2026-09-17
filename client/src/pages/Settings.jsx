@@ -1,266 +1,434 @@
 import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import toast from "react-hot-toast";
+import {
+  User,
+  Bell,
+  Download,
+  Trash2,
+  Save,
+  CheckCircle2,
+  Shield,
+  Briefcase,
+  MapPin,
+  Target,
+  FileSpreadsheet,
+  AlertTriangle
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const Toggle = ({ label, subtitle, checked, onChange }) => {
-  return (
-    <div className="flex items-center justify-between py-4 border-b border-slate-700/50 last:border-0">
-      <div>
-        <div className="text-white font-medium text-sm mb-0.5">{label}</div>
-        <div className="text-slate-400 text-xs">{subtitle}</div>
-      </div>
-      <button
-        onClick={onChange}
-        className={`relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out focus:outline-none ${
-          checked ? "bg-[#6c63ff]" : "bg-white/10"
-        }`}
-      >
-        <span
-          className={`pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow ring-0 transition duration-150 ease-in-out ${
-            checked ? "translate-x-[20px]" : "translate-x-0"
-          }`}
-        />
-      </button>
-    </div>
-  );
-};
-
 const Settings = () => {
+  const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+
+  const [name, setName] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [weeklyGoal, setWeeklyGoal] = useState(5);
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Preferences
   const [settings, setSettings] = useState({
     followUpReminders: true,
     interviewAlerts: true,
     weeklySummary: false,
-    goalAlert: true,
-    darkMode: true,
-    compactView: false,
-    shareAnalytics: true,
-    twoFactorAuth: false
+    goalAlert: true
   });
+  const [savingSettings, setSavingSettings] = useState(false);
+
+  // Danger Zone
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const res = await api.get("/users/settings");
-        if (res.data) {
-          setSettings(prev => ({ ...prev, ...res.data }));
-        }
-      } catch (err) {
-        toast.error("Failed to load settings");
-      } finally {
-        setLoading(false);
+    if (user) {
+      setName(user.name || "");
+      setJobTitle(user.jobTitle || "");
+      setLocation(user.location || "");
+      setWeeklyGoal(user.weeklyGoal || 5);
+      if (user.settings) {
+        setSettings((prev) => ({ ...prev, ...user.settings }));
       }
-    };
-    fetchSettings();
-  }, []);
+    }
+  }, [user]);
 
-  const handleToggle = async (key) => {
-    const newValue = !settings[key];
-    // Optimistic update
-    setSettings(prev => ({ ...prev, [key]: newValue }));
-
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSavingProfile(true);
     try {
-      await api.put("/users/settings", { settingKey: key, value: newValue });
+      const res = await api.put("/users/profile", {
+        name: name.trim(),
+        jobTitle: jobTitle.trim(),
+        location: location.trim(),
+        weeklyGoal: Number(weeklyGoal)
+      });
+      updateUser(res.data);
+      toast.success("Profile updated successfully");
     } catch (err) {
-      // Revert on error
-      setSettings(prev => ({ ...prev, [key]: !newValue }));
-      toast.error("Failed to update setting");
+      toast.error("Failed to update profile");
+    } finally {
+      setSavingProfile(false);
     }
   };
 
-  const handleExportData = async () => {
+  const handleToggle = async (key) => {
+    const updated = !settings[key];
+    setSettings((prev) => ({ ...prev, [key]: updated }));
+
     try {
-      const res = await api.get("/jobs"); // Get all jobs to export
-      const jobs = res.data.data || res.data;
-      
+      await api.put("/users/settings", { settingKey: key, value: updated });
+    } catch (err) {
+      setSettings((prev) => ({ ...prev, [key]: !updated }));
+      toast.error("Failed to update preference");
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const res = await api.get("/jobs", { params: { limit: "all" } });
+      const jobs = res.data.data || [];
+
       if (jobs.length === 0) {
-        return toast.error("No data to export");
+        return toast.error("No applications to export");
       }
 
-      const headers = ["Title", "Company", "Status", "Date", "Link", "Notes"];
-      const csvRows = [];
-      csvRows.push(headers.join(","));
+      const headers = ["Title", "Company", "Status", "Salary", "Location", "Recruiter", "Date", "Link", "Notes"];
+      const rows = [headers.join(",")];
 
-      jobs.forEach(job => {
-        const values = [
-          `"${job.title}"`,
-          `"${job.company}"`,
-          `"${job.status}"`,
-          `"${new Date(job.createdAt).toLocaleDateString()}"`,
-          `"${job.link || ""}"`,
-          `"${(job.notes || "").replace(/"/g, '""')}"`
+      jobs.forEach((j) => {
+        const row = [
+          `"${(j.title || "").replace(/"/g, '""')}"`,
+          `"${(j.company || "").replace(/"/g, '""')}"`,
+          `"${j.status || ""}"`,
+          `"${(j.salary || "").replace(/"/g, '""')}"`,
+          `"${(j.location || "").replace(/"/g, '""')}"`,
+          `"${(j.recruiter?.name || "").replace(/"/g, '""')}"`,
+          `"${new Date(j.createdAt || j.date).toLocaleDateString()}"`,
+          `"${(j.link || "").replace(/"/g, '""')}"`,
+          `"${(j.notes || "").replace(/"/g, '""')}"`
         ];
-        csvRows.push(values.join(","));
+        rows.push(row.join(","));
       });
 
-      const csvData = csvRows.join("\n");
-      const blob = new Blob([csvData], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "jobtracker_export.csv");
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      toast.success("Data exported successfully");
+      const csvContent = rows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `jobtracker_export_${new Date().toISOString().substring(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("CSV export downloaded");
     } catch (err) {
       toast.error("Failed to export data");
     }
   };
 
   const handleDeleteAccount = async () => {
+    if (deleteInput !== "DELETE") {
+      return toast.error("Please type DELETE to confirm");
+    }
+    setDeleting(true);
     try {
       await api.delete("/auth/account");
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/";
+      toast.success("Account and data deleted");
+      logout();
+      navigate("/login");
     } catch (err) {
-      toast.error("Failed to delete account");
-      setShowDeleteConfirm(false);
+      toast.error(err.response?.data?.msg || "Failed to delete account");
+      setDeleting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex justify-center items-center h-full">
-        <div className="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-[#6c63ff] rounded-full"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-4xl mx-auto w-full flex flex-col h-full pb-8">
-      <h1 className="text-2xl font-bold text-white mb-6">Settings</h1>
-
-      <div className="space-y-6">
-        
-        {/* Notifications */}
-        <div className="bg-[#23293d] border border-white/5 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Notifications</h3>
-          <Toggle 
-            label="Follow-up reminders" 
-            subtitle="Remind when to follow up on applications"
-            checked={settings.followUpReminders}
-            onChange={() => handleToggle('followUpReminders')}
-          />
-          <Toggle 
-            label="Interview alerts" 
-            subtitle="Notify 1 hour before scheduled interviews"
-            checked={settings.interviewAlerts}
-            onChange={() => handleToggle('interviewAlerts')}
-          />
-          <Toggle 
-            label="Weekly summary email" 
-            subtitle="Get a weekly digest of your job search"
-            checked={settings.weeklySummary}
-            onChange={() => handleToggle('weeklySummary')}
-          />
-          <Toggle 
-            label="Goal achievement alert" 
-            subtitle="Notify when weekly application goal is hit"
-            checked={settings.goalAlert}
-            onChange={() => handleToggle('goalAlert')}
-          />
-        </div>
-
-        {/* Appearance */}
-        <div className="bg-[#23293d] border border-white/5 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Appearance</h3>
-          <Toggle 
-            label="Dark mode" 
-            subtitle="Use dark theme across the app"
-            checked={settings.darkMode}
-            onChange={() => handleToggle('darkMode')}
-          />
-          <Toggle 
-            label="Compact view" 
-            subtitle="Show more applications per page"
-            checked={settings.compactView}
-            onChange={() => handleToggle('compactView')}
-          />
-        </div>
-
-        {/* Privacy */}
-        <div className="bg-[#23293d] border border-white/5 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Privacy</h3>
-          <Toggle 
-            label="Share analytics" 
-            subtitle="Help improve JobTracker with usage data"
-            checked={settings.shareAnalytics}
-            onChange={() => handleToggle('shareAnalytics')}
-          />
-          <Toggle 
-            label="Two-factor authentication" 
-            subtitle="Extra security for your account"
-            checked={settings.twoFactorAuth}
-            onChange={() => handleToggle('twoFactorAuth')}
-          />
-        </div>
-
-        {/* Danger Zone */}
-        <div className="bg-[#23293d] border border-red-500/30 rounded-2xl p-6 shadow-sm">
-          <h3 className="text-xs font-bold text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
-          
-          <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-white text-sm font-medium">Export all data</span>
-            <button 
-              onClick={handleExportData}
-              className="px-4 py-1.5 border border-red-500/50 text-red-400 text-sm font-medium rounded-lg hover:bg-red-500/10 transition-colors"
-            >
-              Export CSV
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between py-3">
-            <span className="text-white text-sm font-medium">Delete account</span>
-            <button 
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-1.5 border border-red-500/50 text-red-400 text-sm font-medium rounded-lg hover:bg-red-500/10 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-
+    <div className="max-w-4xl mx-auto space-y-8 pb-16">
+      <div>
+        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+          Account Settings
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          Manage your career profile, notification rules, and exported data
+        </p>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#1e293b] rounded-2xl shadow-xl w-full max-w-md border border-[#334155] overflow-hidden">
-            <div className="p-6 text-center">
-              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+      {/* Profile Section */}
+      <div className="jt-card p-6 sm:p-7">
+        <div className="flex items-center gap-3 pb-5 border-b border-white/[0.06] mb-6">
+          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+            <User size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Career Profile</h3>
+            <p className="text-xs text-slate-400">Personal details used to customize your workspace</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSaveProfile} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Full Name
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="jt-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Email Address
+              </label>
+              <input
+                type="email"
+                disabled
+                value={user?.email || ""}
+                className="jt-input opacity-60 cursor-not-allowed bg-black/40"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Target Role / Job Title
+              </label>
+              <div className="relative">
+                <Briefcase size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="e.g. Staff Software Engineer"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className="jt-input pl-9"
+                />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Delete Account</h3>
-              <p className="text-slate-400 text-sm mb-6">
-                Are you sure you want to delete your account? All of your data will be permanently removed. This action cannot be undone.
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Primary Location
+              </label>
+              <div className="relative">
+                <MapPin size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="e.g. San Francisco, CA"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="jt-input pl-9"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                Target Weekly Apps Goal
+              </label>
+              <div className="relative">
+                <Target size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={weeklyGoal}
+                  onChange={(e) => setWeeklyGoal(e.target.value)}
+                  className="jt-input pl-9"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-3">
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="jt-btn-primary py-2 px-4 text-xs flex items-center gap-1.5"
+            >
+              <Save size={14} />
+              <span>{savingProfile ? "Saving..." : "Save Profile"}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Notifications & Preferences */}
+      <div className="jt-card p-6 sm:p-7">
+        <div className="flex items-center gap-3 pb-5 border-b border-white/[0.06] mb-4">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+            <Bell size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Application Notifications</h3>
+            <p className="text-xs text-slate-400">Configure reminder alerts and interview notifications</p>
+          </div>
+        </div>
+
+        <div className="divide-y divide-white/[0.04]">
+          <div className="flex items-center justify-between py-3.5">
+            <div>
+              <p className="text-xs font-semibold text-white">Upcoming Interview Reminders</p>
+              <p className="text-[11px] text-slate-400">Alert me prior to scheduled interviews and assessments</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleToggle("interviewAlerts")}
+              className={`w-10 h-5 rounded-full p-0.5 transition-colors ${
+                settings.interviewAlerts ? "bg-indigo-600" : "bg-white/10"
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.interviewAlerts ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between py-3.5">
+            <div>
+              <p className="text-xs font-semibold text-white">Follow-up Suggestions</p>
+              <p className="text-[11px] text-slate-400">Remind me to follow up if an application has no response after 7 days</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleToggle("followUpReminders")}
+              className={`w-10 h-5 rounded-full p-0.5 transition-colors ${
+                settings.followUpReminders ? "bg-indigo-600" : "bg-white/10"
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.followUpReminders ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between py-3.5">
+            <div>
+              <p className="text-xs font-semibold text-white">Weekly Pipeline Digest</p>
+              <p className="text-[11px] text-slate-400">Generate weekly velocity summary and goal tracking</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleToggle("weeklySummary")}
+              className={`w-10 h-5 rounded-full p-0.5 transition-colors ${
+                settings.weeklySummary ? "bg-indigo-600" : "bg-white/10"
+              }`}
+            >
+              <div
+                className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.weeklySummary ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Export */}
+      <div className="jt-card p-6 sm:p-7">
+        <div className="flex items-center gap-3 pb-5 border-b border-white/[0.06] mb-5">
+          <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+            <Download size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Data Portability</h3>
+            <p className="text-xs text-slate-400">Download a full backup of your applications history</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+          <div className="flex items-center gap-3">
+            <FileSpreadsheet size={20} className="text-emerald-400" />
+            <div>
+              <p className="text-xs font-semibold text-white">Export to CSV Spreadsheet</p>
+              <p className="text-[11px] text-slate-400">Compatible with Google Sheets, Excel, and Notion</p>
+            </div>
+          </div>
+          <button
+            onClick={handleExportCSV}
+            className="jt-btn-secondary py-2 px-4 text-xs flex items-center gap-2 self-start sm:self-auto"
+          >
+            <Download size={14} />
+            <span>Download CSV</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="jt-card p-6 sm:p-7 border-rose-500/20 bg-rose-950/10">
+        <div className="flex items-center gap-3 pb-4 border-b border-rose-500/20 mb-4 text-rose-400">
+          <AlertTriangle size={18} />
+          <h3 className="text-sm font-bold">Danger Zone</h3>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold text-white">Delete Account & Stored Data</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Permanently delete your profile and all tracked job applications. This cannot be undone.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="py-2 px-4 rounded-xl text-xs font-semibold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/80 border border-rose-500/30 transition-all self-start sm:self-auto"
+          >
+            Delete Account
+          </button>
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+            <div className="jt-card p-6 max-w-md w-full border border-rose-500/30 shadow-2xl">
+              <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2 text-rose-400">
+                <AlertTriangle size={16} />
+                Confirm Account Deletion
+              </h4>
+              <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+                This action is permanent and will delete all your applications, interview notes, and analytics.
+                Type <strong className="text-rose-400 font-mono">DELETE</strong> below to confirm.
               </p>
-              <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="Type DELETE"
+                value={deleteInput}
+                onChange={(e) => setDeleteInput(e.target.value)}
+                className="jt-input mb-4 font-mono text-xs"
+              />
+              <div className="flex items-center justify-end gap-3">
                 <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-2.5 bg-[#0f172a] text-white rounded-xl font-medium border border-[#334155] hover:bg-[#334155] transition-colors"
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteInput("");
+                  }}
+                  className="jt-btn-secondary py-2 px-4 text-xs"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleDeleteAccount}
-                  className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors"
+                  disabled={deleteInput !== "DELETE" || deleting}
+                  className="py-2 px-4 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white disabled:opacity-50 transition-all"
                 >
-                  Delete Account
+                  {deleting ? "Deleting..." : "Permanently Delete"}
                 </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
-
+        )}
+      </div>
     </div>
   );
 };

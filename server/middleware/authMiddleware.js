@@ -2,25 +2,38 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
   try {
-    // get token from header
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ msg: "No token, authorization denied" });
+      return res.status(401).json({
+        success: false,
+        msg: "Access denied. No authorization token provided."
+      });
     }
 
-    // extract token
     const token = authHeader.split(" ")[1];
+    if (!token || token === "null" || token === "undefined") {
+      return res.status(401).json({
+        success: false,
+        msg: "Invalid token format."
+      });
+    }
 
-    // verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // attach user to request
-    req.user = decoded;
-
-    next();
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
+      req.user = decoded;
+      next();
+    } catch (jwtErr) {
+      return res.status(401).json({
+        success: false,
+        msg: "Session expired or invalid token. Please log in again."
+      });
+    }
   } catch (error) {
-    return res.status(401).json({ msg: "Token is not valid" });
+    return res.status(500).json({
+      success: false,
+      msg: "Internal authentication error."
+    });
   }
 };
 

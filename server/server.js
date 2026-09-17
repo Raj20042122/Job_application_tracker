@@ -1,6 +1,8 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 
 const connectDB = require("./config/db");
 
@@ -10,8 +12,6 @@ const jobRoutes = require("./routes/jobRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const userRoutes = require("./routes/userRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
-
-dotenv.config();
 
 const app = express();
 

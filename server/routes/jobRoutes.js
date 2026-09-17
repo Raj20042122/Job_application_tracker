@@ -1,25 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const { getJobById } = require("../controllers/jobController");
-const { getJobStats } = require("../controllers/jobController");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const protect = require("../middleware/authMiddleware");
 const {
   createJob,
   getJobs,
+  getJobStats,
+  getJobById,
   updateJob,
   deleteJob
 } = require("../controllers/jobController");
 
-// protected routes
-router.post("/", authMiddleware, createJob);
-router.get("/", authMiddleware, getJobs);
-
-// ✅ PUT THIS BEFORE :id
-router.get("/stats", authMiddleware, getJobStats);
-
-router.get("/:id", authMiddleware, getJobById);
-router.put("/:id", authMiddleware, updateJob);
-router.delete("/:id", authMiddleware, deleteJob);
+// Protected CRUD & Aggregation routes
+router.post("/", protect, createJob);
+router.get("/", protect, getJobs);
+router.get("/stats", protect, getJobStats);
+router.get("/:id", protect, getJobById);
+router.put("/:id", protect, updateJob);
+router.delete("/:id", protect, deleteJob);
 
 module.exports = router;

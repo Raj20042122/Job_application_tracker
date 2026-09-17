@@ -116,7 +116,7 @@ const Profile = () => {
           <p className="text-slate-400 text-sm mb-3">{profile.email}</p>
           
           <div className="px-3 py-1 bg-[#6c63ff]/10 text-[#6c63ff] text-xs font-semibold rounded-full mb-6">
-            Google account
+            Active Account
           </div>
 
           <div className="grid grid-cols-2 gap-3 w-full mb-6">
